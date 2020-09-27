@@ -1,0 +1,64 @@
+{
+  "parameters": {
+    "dbal.dsn": "mysql://$DB_USER:$DB_PASS@$DB_HOST/$DB_NAME?charset=utf8",
+    "application.environment": "$APP_ENV",
+    "logger.name": "app:$APP_ENV:logger",
+    "log.file": "$APP_PATH/var/logs/bookapi-$APP_ENV.log"
+  },
+
+  "services": [
+    {
+      "id": "default.database.connection",
+      "class": "\\Doctrine\\DBAL\\DriverManager",
+      "factory": {
+        "method": "getConnection",
+        "args": [{"url": "%dbal.dsn%"}, "@doctrine.dbal.configuration"]
+      }
+    },
+    {
+      "id": "doctrine.dbal.configuration",
+      "class": "\\Doctrine\\DBAL\\Configuration",
+      "calls": [
+        {"method": "setSQLLogger", "args": ["@logger.sql"]}
+      ]
+    },
+    {
+      "id": "logger.sql",
+      "class": "\\Library\\SqlLogger",
+      "args": ["@logger"]
+    },
+    {
+      "id": "logger",
+      "class": "\\Monolog\\Logger",
+      "args": ["%logger.name%"],
+      "calls": [
+        {"method": "pushHandler", "args": ["@logger.stream.handler"]}
+      ]
+    },
+    {
+      "id": "logger.stream.handler",
+      "class": "\\Monolog\\Handler\\StreamHandler",
+      "args": ["%log.file%", 200]
+    },
+    {
+      "id": "request",
+      "class": "\\Library\\Http\\Request"
+    },
+    {
+      "id": "router",
+      "class": "\\Library\\Routing\\Router",
+      "args": ["@request"]
+    },
+    {
+      "id": "repository.user",
+      "class": "\\Application\\Repository\\UserRepository",
+      "args": ["@default.database.connection"]
+    },
+    {
+      "id": "security.authenticator",
+      "class": "\\Application\\Security\\Authenticator",
+      "args": ["@repository.user"]
+    }
+
+  ]
+}

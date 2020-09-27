@@ -1,0 +1,6 @@
+.DS_Store
+.idea
+app/Config/Configuration.php
+app/var/logs/*.log
+vendor
+

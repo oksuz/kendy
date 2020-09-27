@@ -1,0 +1,29 @@
+{
+  "name": "Rest Api",
+  "description": "rest api",
+  "authors": [
+    {
+      "name": "Yunus Oksuz",
+      "email": "yunusoksuz@gmail.com",
+      "role": "Developer",
+      "homepage": "http://www.yunusoksuz.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "doctrine/dbal": "2.5.2",
+    "monolog/monolog": "^1.17"
+  },
+  "autoload":{
+    "psr-4": {
+      "Library\\": "app/lib",
+      "Application\\": "app/"
+    },
+    "files": ["app/routes.php"]
+  },
+  "scripts":{
+    "post-install-cmd": [
+      "Application\\Builder\\ConfigBuilder::buildConfig"
+    ]
+  }
+}
